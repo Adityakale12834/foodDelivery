@@ -19,7 +19,7 @@ Ensure the following are installed on your system:
 Create a `.env` file inside the `server` directory and add:
 
 ```env
-MONGODB_URL=mongodb+srv://aditya:aditya@cluster0.s1e8c.mongodb.net/?appName=Cluster0
+MONGODB_URL=
 JWT=adityakale
 ADMIN_SECRET=adminsecret
 
