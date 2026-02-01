@@ -2,16 +2,11 @@ import { CircularProgress, Rating } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Button from "../components/Button";
-import {
-  FavoriteBorder,
-  FavoriteBorderOutlined,
-  FavoriteRounded,
-} from "@mui/icons-material";
+import { FavoriteBorderOutlined, FavoriteRounded } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   addToCart,
   addToFavourite,
-  deleteFromCart,
   deleteFromFavourite,
   getFavourite,
   getProductDetails,
@@ -156,7 +151,7 @@ const FoodDetails = () => {
 
   const removeFavourite = async () => {
     setFavoriteLoading(true);
-    const token = localStorage.getItem("krist-app-token");
+    const token = localStorage.getItem("foodeli-app-token");
     await deleteFromFavourite(token, { productId: id })
       .then((res) => {
         setFavorite(false);
@@ -175,7 +170,7 @@ const FoodDetails = () => {
 
   const addFavourite = async () => {
     setFavoriteLoading(true);
-    const token = localStorage.getItem("krist-app-token");
+    const token = localStorage.getItem("foodeli-app-token");
     await addToFavourite(token, { productId: id })
       .then((res) => {
         setFavorite(true);
@@ -194,7 +189,7 @@ const FoodDetails = () => {
 
   const checkFavorite = async () => {
     setFavoriteLoading(true);
-    const token = localStorage.getItem("krist-app-token");
+    const token = localStorage.getItem("foodeli-app-token");
     await getFavourite(token, { productId: id })
       .then((res) => {
         const isFavorite = res.data?.some((favorite) => favorite._id === id);
@@ -220,22 +215,26 @@ const FoodDetails = () => {
   }, []);
 
   const addCart = async () => {
+    const token = localStorage.getItem("foodeli-app-token");
+    if (!token) {
+      dispatch(openSnackbar({ message: "Please sign in to add to cart", severity: "error" }));
+      return;
+    }
     setCartLoading(true);
-    const token = localStorage.getItem("krist-app-token");
-    await addToCart(token, { productId: id, quantity: 1 })
-      .then((res) => {
-        setCartLoading(false);
-        navigate("/cart");
-      })
-      .catch((err) => {
-        setCartLoading(false);
-        dispatch(
-          openSnackbar({
-            message: err.message,
-            severity: "error",
-          })
-        );
-      });
+    try {
+      await addToCart(token, { productId: id, quantity: 1 });
+      setCartLoading(false);
+      dispatch(openSnackbar({ message: "Added to cart", severity: "success" }));
+      navigate("/cart");
+    } catch (err) {
+      setCartLoading(false);
+      dispatch(
+        openSnackbar({
+          message: err?.response?.data?.message || err.message,
+          severity: "error",
+        })
+      );
+    }
   };
 
   return (
@@ -276,7 +275,13 @@ const FoodDetails = () => {
                 isLoading={cartLoading}
                 onClick={() => addCart()}
               />
-              <Button text="Order Now" full />
+              <Button
+                text="Order Now"
+                full
+                onClick={() => addCart()}
+                isDisabled={cartLoading}
+                isLoading={cartLoading}
+              />
               <Button
                 leftIcon={
                   favorite ? (

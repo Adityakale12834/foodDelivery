@@ -46,7 +46,7 @@ const Favourites = () => {
 
   const getProducts = async () => {
     setLoading(true);
-    const token = localStorage.getItem("krist-app-token");
+    const token = localStorage.getItem("foodeli-app-token");
     await getFavourite(token).then((res) => {
       setProducts(res.data);
       setLoading(false);
@@ -67,7 +67,7 @@ const Favourites = () => {
           ) : (
             <>
               {products.map((product) => (
-                <ProductsCard product={product} />
+                <ProductsCard key={product._id} product={product} />
               ))}
             </>
           )}

@@ -112,7 +112,7 @@ const FoodListing = () => {
       <Filters>
         <Menu>
           {filter.map((filters) => (
-            <FilterSection>
+            <FilterSection key={filters.value}>
               <Title>{filters.name}</Title>
               {filters.value === "price" ? (
                 <Slider

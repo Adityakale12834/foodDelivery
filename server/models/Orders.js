@@ -2,6 +2,11 @@ import mongoose from "mongoose";
 
 const OrderSchema = new mongoose.Schema(
   {
+    restaurant: {
+      type: mongoose.Types.ObjectId,
+      ref: "Restaurant",
+      default: null,
+    },
     total_amount: {
       type: Number,
       required: true,

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { createError } from "../error.js";
 import Food from "../models/Food.js";
 
 export const addProducts = async (req, res, next) => {
@@ -33,16 +34,19 @@ export const addProducts = async (req, res, next) => {
 
 export const getFoodItems = async (req, res, next) => {
   try {
-    let { categories, minPrice, maxPrice, ingredients, search } = req.query;
+    let { categories, minPrice, maxPrice, ingredients, search, restaurant } = req.query;
     ingredients = ingredients?.split(",");
     categories = categories?.split(",");
 
     const filter = {};
+    if (restaurant && mongoose.isValidObjectId(restaurant)) {
+      filter.restaurant = restaurant;
+    }
     if (categories && Array.isArray(categories)) {
-      filter.category = { $in: categories }; // Match products in any of the specified categories
+      filter.category = { $in: categories };
     }
     if (ingredients && Array.isArray(ingredients)) {
-      filter.ingredients = { $in: ingredients }; // Match products in any of the specified ingredients
+      filter.ingredients = { $in: ingredients };
     }
     if (maxPrice || minPrice) {
       filter["price.org"] = {};
@@ -55,8 +59,8 @@ export const getFoodItems = async (req, res, next) => {
     }
     if (search) {
       filter.$or = [
-        { title: { $regex: new RegExp(search, "i") } }, // Case-insensitive title search
-        { desc: { $regex: new RegExp(search, "i") } }, // Case-insensitive description search
+        { name: { $regex: new RegExp(search, "i") } },
+        { desc: { $regex: new RegExp(search, "i") } },
       ];
     }
     const foodList = await Food.find(filter);

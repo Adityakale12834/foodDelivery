@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { createError } from "../error.js";
 import User from "../models/User.js";
 import Orders from "../models/Orders.js";
+import Food from "../models/Food.js";
 
 dotenv.config();
 
@@ -57,6 +58,16 @@ export const UserLogin = async (req, res, next) => {
       expiresIn: "9999 years",
     });
     return res.status(200).json({ token, user });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getMe = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user?.id).select("-password").exec();
+    if (!user) return next(createError(401, "You are not authenticated!"));
+    return res.status(200).json({ user });
   } catch (err) {
     next(err);
   }
@@ -129,6 +140,9 @@ export const getAllCartItems = async (req, res, next) => {
       path: "cart.product",
       model: "Food",
     });
+    if (!user || !user.cart) {
+      return res.status(200).json([]);
+    }
     const cartItems = user.cart;
     return res.status(200).json(cartItems);
   } catch (err) {
@@ -144,14 +158,28 @@ export const placeOrder = async (req, res, next) => {
     const userJWT = req.user;
     const user = await User.findById(userJWT.id);
 
+    // Try to derive restaurant from products (must be single-restaurant order)
+    const productIds = Array.isArray(products) ? products.map((p) => p.product) : [];
+    const foods = await Food.find({ _id: { $in: productIds } })
+      .select("restaurant")
+      .exec();
+    const restaurantIds = [
+      ...new Set(foods.map((f) => (f.restaurant ? f.restaurant.toString() : null)).filter(Boolean)),
+    ];
+    if (restaurantIds.length > 1) {
+      return next(createError(400, "Order must contain items from a single restaurant"));
+    }
+
     const order = new Orders({
       products,
       user: user._id,
       total_amount: totalAmount,
       address,
+      restaurant: restaurantIds[0] || null,
     });
 
     await order.save();
+    user.orders.push(order._id);
     user.cart = [];
     await user.save();
     return res
@@ -164,16 +192,36 @@ export const placeOrder = async (req, res, next) => {
 
 export const getAllOrders = async (req, res, next) => {
   try {
-    const { productId } = req.body;
-    const userJWT = req.user;
-    const user = await User.findById(userJWT.id);
-    if (!user.favourites.includes(productId)) {
-      user.favourites.push(productId);
-      await user.save();
+    const userId = req.user?.id;
+    const orders = await Orders.find({ user: userId })
+      .sort({ createdAt: -1 })
+      .populate({ path: "products.product", model: "Food" })
+      .exec();
+    return res.status(200).json(orders);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const userUpdateOrderStatus = async (req, res, next) => {
+  try {
+    const userId = req.user?.id;
+    const { id } = req.params;
+    const { status } = req.body;
+    if (!status) return next(createError(400, "Status is required"));
+    const allowed = ["Payment Done", "Preparing", "Out for Delivery", "Delivered", "Cancelled"];
+    if (!allowed.includes(status)) return next(createError(400, "Invalid status"));
+    const order = await Orders.findOne({ _id: id, user: userId }).exec();
+    if (!order) return next(createError(404, "Order not found"));
+    if (order.status === "Delivered") {
+      return next(createError(400, "Cannot change status of delivered order"));
     }
-    return res
-      .status(200)
-      .json({ message: "Product added to favorites successfully", user });
+    order.status = status;
+    await order.save();
+    const updated = await Orders.findById(id)
+      .populate({ path: "products.product", model: "Food" })
+      .exec();
+    return res.status(200).json(updated);
   } catch (err) {
     next(err);
   }

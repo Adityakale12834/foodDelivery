@@ -4,6 +4,10 @@ import cors from "cors";
 import mongoose from "mongoose";
 import UserRoutes from "./routes/User.js";
 import FoodRoutes from "./routes/Food.js";
+import AdminRoutes from "./routes/Admin.js";
+import RestaurantRoutes from "./routes/Restaurant.js";
+import RestaurantPortalRoutes from "./routes/RestaurantPortal.js";
+import PublicRoutes from "./routes/Public.js";
 dotenv.config();
 
 const app = express();
@@ -12,7 +16,11 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true })); // for form data
 
 app.use("/api/user/", UserRoutes);
+app.use("/api/admin/restaurants", RestaurantRoutes);
+app.use("/api/admin/", AdminRoutes);
+app.use("/api/restaurant", RestaurantPortalRoutes);
 app.use("/api/food/", FoodRoutes);
+app.use("/api", PublicRoutes);
 
 // error handler
 app.use((err, req, res, next) => {
