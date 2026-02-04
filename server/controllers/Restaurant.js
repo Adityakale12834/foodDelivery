@@ -80,10 +80,19 @@ export const adminDeleteRestaurant = async (req, res, next) => {
   }
 };
 
-// Public: list active restaurants (for user homepage)
+// Public: list active restaurants (for user homepage), optional search
 export const getPublicRestaurants = async (req, res, next) => {
   try {
-    const list = await Restaurant.find({ isActive: true })
+    const { search } = req.query;
+    const filter = { isActive: true };
+    if (search && search.trim()) {
+      filter.$or = [
+        { name: { $regex: new RegExp(search.trim(), "i") } },
+        { description: { $regex: new RegExp(search.trim(), "i") } },
+        { address: { $regex: new RegExp(search.trim(), "i") } },
+      ];
+    }
+    const list = await Restaurant.find(filter)
       .sort({ name: 1 })
       .select("name description address phone img")
       .exec();

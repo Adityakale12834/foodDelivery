@@ -10,6 +10,7 @@ import Cart from "./pages/Cart";
 import FoodDetails from "./pages/FoodDetails";
 import FoodListing from "./pages/FoodListing";
 import UserOrders from "./pages/Orders";
+import Contact from "./pages/Contact";
 import { useSelector } from "react-redux";
 import AdminLogin from "./pages/admin/Login";
 import AdminSignup from "./pages/admin/Signup";
@@ -45,6 +46,7 @@ function App() {
             <Route path="/favorite" exact element={<Favourites />} />
             <Route path="/cart" exact element={<Cart />} />
             <Route path="/orders" exact element={<UserOrders />} />
+            <Route path="/contact" exact element={<Contact />} />
             <Route path="/dishes/:id" exact element={<FoodDetails />} />
             <Route path="/dishes" exact element={<FoodListing />} />
             <Route path="/admin/login" element={<AdminLogin />} />
@@ -57,7 +59,6 @@ function App() {
                 <Route path="orders" element={<Orders />} />
               </Route>
             </Route>
-
             <Route path="/restaurant/login" element={<RestaurantLogin />} />
             <Route path="/restaurant" element={<RestaurantProtectedRoute />}>
               <Route element={<RestaurantLayout />}>
@@ -67,7 +68,7 @@ function App() {
                 <Route path="orders" element={<RestaurantOrders />} />
               </Route>
             </Route>
-</Routes>
+          </Routes>
           {openAuth && (
             <Authentication setOpenAuth={setOpenAuth} openAuth={openAuth} />
           )}

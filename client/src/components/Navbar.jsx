@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { Link as LinkR, NavLink } from "react-router-dom";
-import LogoImg from "../utils/Images/Logo.png";
 import {
   FavoriteBorder,
   MenuRounded,
-  SearchRounded,
   ShoppingCartOutlined,
 } from "@mui/icons-material";
 import Button from "./Button";
@@ -45,9 +43,7 @@ const NavLogo = styled(LinkR)`
   text-decoration: none;
   color: inherit;
 `;
-const Logo = styled.img`
-  height: 34px;
-`;
+
 const NavItems = styled.ul`
   width: 100%;
   display: flex;
@@ -154,13 +150,10 @@ const Navbar = ({ setOpenAuth, openAuth, currentUser }) => {
           <MenuRounded style={{ color: "inherit" }} />
         </MobileIcon>
         <NavLogo to="/">
-          <Logo src={LogoImg} />
+          <span style={{ fontWeight: 700, fontSize: 24, color: 'red' }}>FoodKartz</span>
         </NavLogo>
 
         <MobileIcons>
-          <Navlink to="/search">
-            <SearchRounded sx={{ color: "inherit", fontSize: "30px" }} />
-          </Navlink>
           <Navlink to="/favorite">
             <FavoriteBorder sx={{ color: "inherit", fontSize: "28px" }} />
           </Navlink>
@@ -223,9 +216,6 @@ const Navbar = ({ setOpenAuth, openAuth, currentUser }) => {
         )}
 
         <ButtonContainer>
-          <Navlink to="/search">
-            <SearchRounded sx={{ color: "inherit", fontSize: "30px" }} />
-          </Navlink>
           {currentUser ? (
             <>
               <Navlink to="/favorite">

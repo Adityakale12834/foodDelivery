@@ -225,11 +225,14 @@ const ProductsCard = ({ product }) => {
   }, [favorite]);
   return (
     <Card>
-      <Top>
+      <Top onClick={() => navigate(`/dishes/${product._id}`)}>
         <Image src={product?.img} />
         <Menu>
           <MenuItem
-            onClick={() => (favorite ? removeFavourite() : addFavourite())}
+            onClick={(e) => {
+              e.stopPropagation();
+              favorite ? removeFavourite() : addFavourite();
+            }}
           >
             {favoriteLoading ? (
               <>
@@ -245,7 +248,10 @@ const ProductsCard = ({ product }) => {
               </>
             )}
           </MenuItem>
-          <MenuItem onClick={() => addCart(product?._id)}>
+          <MenuItem onClick={(e) => {
+            e.stopPropagation();
+            addCart(product?._id);
+          }}>
             <ShoppingBagOutlined sx={{ fontSize: "20px" }} />
           </MenuItem>
         </Menu>
@@ -257,8 +263,8 @@ const ProductsCard = ({ product }) => {
         <Title>{product?.name}</Title>
         <Desc>{product?.desc}</Desc>
         <Price>
-          ${product?.price?.org} <Span>${product?.price?.mrp}</Span>
-          <Percent> (${product?.price?.off}% Off) </Percent>
+          ₹{product?.price?.org} <Span>₹{product?.price?.mrp}</Span>
+          <Percent> (₹{product?.price?.off}% Off) </Percent>
         </Price>
       </Details>
     </Card>

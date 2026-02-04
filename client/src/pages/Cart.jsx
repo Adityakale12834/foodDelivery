@@ -150,6 +150,12 @@ const Cart = () => {
     phoneNumber: "",
     completeAddress: "",
   });
+  const [paymentDetails, setPaymentDetails] = useState({
+    cardNumber: "",
+    expiryDate: "",
+    cvv: "",
+    cardHolderName: "",
+  });
 
   const getProducts = async () => {
     setLoading(true);
@@ -308,7 +314,7 @@ const Cart = () => {
                           </Details>
                         </Product>
                       </TableItem>
-                      <TableItem>${item?.product?.price?.org}</TableItem>
+                      <TableItem>₹{item?.product?.price?.org}</TableItem>
                       <TableItem>
                         <Counter>
                           <div
@@ -336,7 +342,7 @@ const Cart = () => {
                       </TableItem>
                       <TableItem>
                         {" "}
-                        $
+                        ₹
                         {(item.quantity * item?.product?.price?.org).toFixed(2)}
                       </TableItem>
                       <TableItem>
@@ -356,7 +362,7 @@ const Cart = () => {
                 </Left>
                 <Right>
                   <Subtotal>
-                    Subtotal : ${calculateSubtotal().toFixed(2)}
+                    Subtotal : ₹{calculateSubtotal().toFixed(2)}
                   </Subtotal>
                   <Delivery>
                     Delivery Details:
@@ -430,21 +436,61 @@ const Cart = () => {
                   <Delivery>
                     Payment Details:
                     <div>
-                      <TextInput small placeholder="Card Number" />
+                      <TextInput 
+                        small 
+                        placeholder="Card Number" 
+                        value={paymentDetails.cardNumber}
+                        handelChange={(e) =>
+                          setPaymentDetails({
+                            ...paymentDetails,
+                            cardNumber: e.target.value,
+                          })
+                        }
+                      />
                       <div
                         style={{
                           display: "flex",
                           gap: "6px",
                         }}
                       >
-                        <TextInput small placeholder="Expiry Date" />
-                        <TextInput small placeholder="CVV" />
+                        <TextInput 
+                          small 
+                          placeholder="Expiry Date" 
+                          value={paymentDetails.expiryDate}
+                          handelChange={(e) =>
+                            setPaymentDetails({
+                              ...paymentDetails,
+                              expiryDate: e.target.value,
+                            })
+                          }
+                        />
+                        <TextInput 
+                          small 
+                          placeholder="CVV" 
+                          value={paymentDetails.cvv}
+                          handelChange={(e) =>
+                            setPaymentDetails({
+                              ...paymentDetails,
+                              cvv: e.target.value,
+                            })
+                          }
+                        />
                       </div>
-                      <TextInput small placeholder="Card Holder name" />
+                      <TextInput 
+                        small 
+                        placeholder="Card Holder name" 
+                        value={paymentDetails.cardHolderName}
+                        handelChange={(e) =>
+                          setPaymentDetails({
+                            ...paymentDetails,
+                            cardHolderName: e.target.value,
+                          })
+                        }
+                      />
                     </div>
                   </Delivery>
                   <Button
-                    text="Pace Order"
+                    text="Place Order"
                     small
                     onClick={PlaceOrder}
                     isLoading={buttonLoad}

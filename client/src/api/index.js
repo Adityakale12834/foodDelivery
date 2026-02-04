@@ -91,8 +91,13 @@ export const RestaurantUpdateOrderStatus = async (token, orderId, status) =>
     { headers: { Authorization: `Bearer ${token}` } }
   );
 
-// public restaurants (for homepage)
-export const getRestaurants = async () => await API.get("/restaurants");
+// public restaurants (for homepage), optional search
+export const getRestaurants = async (search) =>
+  await API.get(`/restaurants${search ? `?search=${encodeURIComponent(search)}` : ""}`);
+
+// contact form
+export const submitContactQuery = async (data) =>
+  await API.post("/contact", data);
 
 // products (filter optional: "minPrice=0&maxPrice=100" or "restaurant=id")
 export const getAllProducts = async (filter) =>

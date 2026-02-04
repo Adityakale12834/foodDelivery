@@ -122,8 +122,8 @@ const FoodListing = () => {
                   max={1000}
                   valueLabelDisplay="auto"
                   marks={[
-                    { value: 0, label: "$0" },
-                    { value: 1000, label: "$1000" },
+                    { value: 0, label: "₹0" },
+                    { value: 1000, label: "₹1000" },
                   ]}
                   onChange={(e, newValue) => setPriceRange(newValue)}
                 />

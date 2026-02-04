@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { category } from "../utils/data";
 import HeaderImage from "../utils/Images/Header.png";
@@ -76,6 +76,7 @@ const Home = () => {
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [itemsLoading, setItemsLoading] = useState(false);
   const [restaurantItems, setRestaurantItems] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     getRestaurants()
